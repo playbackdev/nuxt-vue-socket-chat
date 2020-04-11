@@ -58,8 +58,21 @@
                         name: this.name,
                         room: this.room
                     };
-                    this.setUser(user);
-                    this.$router.push('/chat');
+                    //Отправляем данные на сервер через сокет
+                    //данные - user
+                    //3й аргумент - коллбек с ответом сервера
+                    this.$socket.emit('userJoined', user, data => {
+                        //если в объекте ответа с сервера - строка,
+                        //значит это ошибка
+                        if(typeof data === 'string') {
+                            console.error(data);
+                        } else {
+                            user.id = data.userId;
+                            this.setUser(user);
+                            this.$router.push('/chat');
+                        }
+                    });
+
 
                 }
             }
